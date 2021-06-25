@@ -1,0 +1,37 @@
+Prilikom prve registracije kreira se user sa SuperAdmin rolom.
+
+Iako nije u zadatku SuperAdmin (u bazi super_admin) moze ostalim korisnicima da menja status Member->Admin i obrnuto.
+
+Razmisljanja:
+
+- file upload je klasican file upload putem forme sa svim svojim ogranicenjima, velicina fajla, post, i timeoutom definisanih u php.ini
+- u realnim okolnostima uradio bih kao chunked upload (za LARGE fajlove), medjutim to radja novo pitanje parsiranja: chunked parsiranje... 
+  Iskreno za task nisam hteo da radim taj overkill (to resenje postoji na nekim mojim projektima, prezentazija) moguca
+- ugradjena je "trazilica" ili search forma koja obuhvata sve zahteve taska.
+- istu trazilicu koristi i API endpoint (samo jedna ruta), sobzirom da trazilica ima multi argument pristup nisam pravio vise ruta
+- API ruta NIJE POD AUTH MIDDLEWAROM jer ne znam ko ce je konzumirati (u tasku to nije naglaseno). WEB ruta slicne namene je pod AUTH guardom
+
+API ruta:
+  api/knjige/search
+
+body format argumenata:
+
+{
+      'naziv': 'nullable|string',
+      'autor': 'nullable|string',
+      'izdavac': 'nullable|string',
+      'godina_izdanja': 'nullable|integer',
+      'last': 'nullable|integer',
+      'before': 'nullable|integer'
+	
+}
+
+...polja mogu biti "omitted" (izostavljena). Bez argumenata vraca sve Knjiga-e
+
+- sama trazilica krece od svih itema u bazi i filtrira ih dalje po dostupnom filteru. 
+  Znam da pokupiti celu bazu je veliki NO-NO i definitivno bih to drugacije resio u produkciji: paginacijom, prvim filterom, merdzovanim filterima itd...
+  Za potrebe taska sam implementirao ovo resenje...
+
+
+Pozdrav,
+Aleksandar Milivojevic
